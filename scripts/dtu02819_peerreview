@@ -1,0 +1,55 @@
+#!/usr/bin/env python2
+
+"""
+dtu02819_peerreview.
+
+Usage:
+  dtu02819_peerreview [options]
+
+Options:
+  --participants=<FILE>  CampusNet export file [default: export.csv].
+  --peerreview1=<FILE>   [default: Exam_ Python peer-review 1.zip]
+  --peerreview2=<FILE>   [default: Exam_ Python peer-review 2.zip]
+
+"""
+
+
+import docopt
+from pandas import DataFrame, read_csv
+
+
+class Participants(object):
+    
+    def load(self, filename="export.csv"):
+        """
+        Load participant data from CampusNet comma-separated export file.
+
+        Parameters
+        ----------
+        filename : string
+            filename for export file.
+        """
+        self.df = read_csv(filename, sep=";")
+   
+    def __repr__(self):
+        return "<class 'Participants'>"
+
+    def __str__(self):
+        return self.df.__str__()
+
+    def sort(self, type="firstname"):
+        
+
+
+class PeerReview(object):
+    pass
+
+
+
+args = docopt.docopt(__doc__)
+
+participants = Participants()
+participants.load(args['--participants'])
+            
+print(participants)    
+

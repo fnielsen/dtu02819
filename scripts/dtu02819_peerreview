@@ -20,6 +20,9 @@ from pandas import DataFrame, read_csv
 
 class Participants(object):
     
+    def __init__(self):
+        self.df = []
+
     def load(self, filename="export.csv"):
         """
         Load participant data from CampusNet comma-separated export file.
@@ -38,6 +41,14 @@ class Participants(object):
         return self.df.__str__()
 
     def sort(self, type="firstname"):
+        pass
+    
+    def get_name(self, study_number):
+        """
+        """
+        index = self.df.index[self.df['Student number']==study_number][0]
+        return self.df.get_value(index, 'Given Name') + " " + \
+            self.df.get_value(index, 'Family Name')
         
 
 
@@ -51,5 +62,5 @@ args = docopt.docopt(__doc__)
 participants = Participants()
 participants.load(args['--participants'])
             
-print(participants)    
+print(participants.get_name("s132438"))
 

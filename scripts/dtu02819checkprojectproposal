@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+
+"""
+dtu02819checkprojectproposals.
+
+Usage:
+  dtu02819_peerreview [options] <file>
+
+Options:
+   --only-title-and-members   Check only for title and members [default: False]
+
+"""
+
+from __future__ import print_function, unicode_literals
+import imp
+import json
+import os.path
+
+
+FILENAME = 'projectproposal.json'
+
+class ProposalError(Exception):
+    pass
+
+
+def main(args):
+
+    # Enforce a filename
+    if not os.path.isfile(args['<file>']):
+        raise ProposalError("<file> input argument is not a file")
+    if not args['<file>'] == FILENAME:
+        raise ProposalError("Filename should be '" + FILENAME + "'. "
+                        "Was {}".format(args['<file>']))
+    
+    # Read JSON file
+    proposal = json.load(open(FILENAME))
+
+    # Check the individual elements
+    if 'title' not in proposal:
+        raise ProposalError("Missing 'title' in project proposal.")
+
+    if 'members' not in proposal:
+        raise ProposalError("Missing 'members' in project proposal.")
+    if not isinstance(proposal['members'], list):
+        raise ProposalError("'members' value in proposal should be a list.")
+    for member in proposal['members']:
+        if 'name' not in member:
+            raise ProposalError("'name' missing from member.")
+        if 'study_number' not in member:
+            raise ProposalError("'study_number' missing from member:")
+
+    if not args['--only-title-and-members']:
+        if 'git' not in proposal:
+            raise ProposalError("'git' missing from proposal.")
+
+        if 'description' not in proposal:
+            raise ProposalError("'description' missing from proposal.")
+        print(type(proposal['description']))
+        print(type(str('1')))
+
+        if 'modules' not in proposal:
+            raise ProposalError("'modules' missing from proposal.")
+        if not isinstance(proposal['modules'], list):
+            raise ProposalError("'modules' value should be a list.")
+        for module in proposal['modules']:
+            # find_module will raise an exception if module is not found.
+            imp.find_module(module)
+            
+
+if __name__ == '__main__':
+   from docopt import docopt
+
+   args = docopt(__doc__)
+   main(args)

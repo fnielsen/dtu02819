@@ -1,4 +1,22 @@
-"""Handle projectproposals."""
+"""Handle projectproposals.
+
+
+Example
+-------
+>>> JSON = '''
+{
+  "title": "Data mining of Data Mining using Python",
+  "members": [ 
+    { "name": "Finn Aarup Nielsen", 
+      "study_number": "faan"
+    }
+  ],
+  "git": "git@github.com:fnielsen/dtu02819.git", 
+  "description": "Data mining of data from the DTU course 02819",
+  "modules": ["nltk", "csv", "django", "pandas", "gensim", "sklearn"]
+}'''
+
+"""
 
 
 import codecs
@@ -9,6 +27,7 @@ import re
 
 
 FILENAME_PROJECTPROPOSAL = 'projectproposal.json'
+
 
 
 class ProjectProposal(object):
@@ -43,6 +62,7 @@ class ProjectProposal(object):
         data = json.loads(self.raw)
         for field in self.fields:
             setattr(self, field, data[field])
+        self.fix_modules()
 
     def check_members(self):
         """Check that 'members' field have correct subfields."""
@@ -53,6 +73,13 @@ class ProjectProposal(object):
                 raise ValueError("Member should have 'name'")
             if 'study_number' not in member:
                 raise ValueError("Member should have 'study_number'")
+
+    def fix_modules(self):
+        """Change modules to list of strings if string."""
+        if not hasattr(self, 'modules'):
+            self.modules = []
+        if isinstance(self.modules, basestring):
+            self.modules = re.findall('\W+', self.modules, flags=re.UNICODE)
 
     def keys(self):
         return self.fields
@@ -74,7 +101,7 @@ class ProjectProposals(object):
     def read(self, dirname):
         subdirnames = os.listdir(dirname)
         for subdirname in subdirnames:
-            if re.match('s\d+', subdirname ):
+            if re.match('s\d+', subdirname ) or '(faan)' == subdirname:
                 proposal = {'uploader': subdirname, 'status': 'ok'}
                 try:
                     proposal.update(ProjectProposal(subdirname).items())

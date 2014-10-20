@@ -23,7 +23,9 @@ Example
 
 
 import codecs
+from collections import defaultdict
 import json
+from operator import or_
 import os
 import pandas as pd
 import re
@@ -70,10 +72,14 @@ class ProjectProposal(object):
         """Set fields from JSON file."""
         with codecs.open(filename, encoding='utf-8') as fid:
             self.raw = fid.read()
-        data = json.loads(self.raw)
+        self.from_string(self.raw)
+        self.fix_modules()
+
+    def from_string(self, string):
+        """Set fields from JSON string."""
+        data = json.loads(string)
         for field in self.fields:
             setattr(self, field, data[field])
-        self.fix_modules()
 
     def check_members(self):
         """Check that 'members' field have correct subfields."""
@@ -126,11 +132,24 @@ class ProjectProposals(object):
                     proposal['status'] = str(err)
                 self._proposals.append(proposal)
 
-    def get_titles(self):
+    @property
+    def all_study_numbers(self):
+        """Return all unique study numbers as set of strings."""
+        study_numbers = set()
+        for proposal in self._proposals:
+            try: 
+                for member in proposal['members']:
+                    study_numbers.add(member['study_number'])
+            except KeyError as err:
+                pass
+        return study_numbers
+    
+    @property
+    def titles(self):
         """Return all titles."""
         return [proposal.get('title', '') for proposal in self._proposals]
 
-    def to_status_df(self, columns=('uploader', 'title', 'status')):
+    def to_status_df(self, columns=('uploader', 'title', 'status', 'git')):
         """Convert proposals to dataframe with status."""
         return pd.DataFrame([[proposal.get(column, '') for column in columns]
                              for proposal in self._proposals], columns=columns)
@@ -153,5 +172,7 @@ class ProjectProposals(object):
 
     def to_html(self):
         """Convert data to an HTML string."""
+        df_modules = self.to_modules_df()
+        formatters = [lambda element: "*" if element else ""] * len(df_modules.columns)
         return (self.to_status_df().to_html() + '\n<br><br>\n' +
-                self.to_modules_df().to_html())
+                df_modules.to_html(formatters=formatters))

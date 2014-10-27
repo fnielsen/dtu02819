@@ -1,9 +1,10 @@
 """Perform various checks on Python files."""
 
 
+import os
+import pandas as pd
 from pylint import epylint as lint
 import re
-import pandas as pd
 
 
 class CheckError(Exception):
@@ -61,5 +62,26 @@ class PythonFile(dict):
 
 
 class PythonFiles(list):
-    def __init__(self):
-        pass
+    def __init__(self, dirname='.'):
+        self.top_dir = dirname
+
+    @staticmethod
+    def is_py_filename(filename):
+        """Check is file is a .py file.
+
+        Example
+        -------
+        >>> PythonFiles.is_py_filename('test.py')
+        True
+      
+        """
+        return filename.endswith('.py')
+
+    def py_filenames(self):
+        """Return generator for .py files."""
+        for dirpath, dirnames, filenames in os.walk(self.top_dir):
+            for filename in filenames:
+                filename_with_path = os.path.join(dirpath, filename)
+                if self.is_py_filename(filename_with_path):
+                    yield filename_with_path
+

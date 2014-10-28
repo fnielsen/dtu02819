@@ -1,2 +1,4 @@
 *.pyc
 *~
+.tox
+dtu02819.egg-info

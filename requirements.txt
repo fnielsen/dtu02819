@@ -1,0 +1,3 @@
+pandas
+pep257
+pylint

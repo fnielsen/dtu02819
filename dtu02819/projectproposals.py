@@ -38,7 +38,7 @@ class ProjectProposal(object):
         elif os.path.isdir(filename):
             self.read_from_dir(filename)
         else:
-            raise IOError("No such file or directory")
+            raise IOError("No such file or directory: {}".format(filename))
         self.check_members()
 
     def read_from_dir(self, dirname, filename=FILENAME_PROJECTPROPOSAL):
@@ -111,8 +111,9 @@ class ProjectProposals(object):
         for subdirname in subdirnames:
             if re.match('s\d+', subdirname) or '(faan)' == subdirname:
                 proposal = {'uploader': subdirname, 'status': 'ok'}
+                dirpath = os.path.join(dirname, subdirname)
                 try:
-                    proposal.update(ProjectProposal(subdirname).items())
+                    proposal.update(ProjectProposal(dirpath).items())
                 except (KeyError, ValueError) as err:
                     proposal['status'] = str(err)
                 self._proposals.append(proposal)
@@ -158,6 +159,10 @@ class ProjectProposals(object):
     def to_html(self):
         """Convert data to an HTML string."""
         df_modules = self.to_modules_df()
+
+        # Avoid truncation of strings in elements
+        pd.set_option('display.max_colwidth', -1)
+
         formatters = [lambda element: "*" if element else ""] * len(df_modules.columns)
         return (self.to_status_df().to_html() + '\n<br><br>\n' +
                 df_modules.to_html(formatters=formatters))

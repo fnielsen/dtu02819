@@ -4,7 +4,7 @@
     { "name": "Finn Årup Nielsen", 
       "study_number": "faan"
     } 
-  ],v
+  ],
   "git": "git@github.com:fnielsen/dtu02819.git", 
   "description": "This project will data mining of the different data that are available in the DTU course 02819 running in the Autumn semester. The data will include multiple choice results, code, evaluations and project proposals. We will present data on an interactive website. The data mining techniques will include unsupervized data mining of proposals to find similar find group similarity, ....",
   "modules": ["nltk", "csv", "django", "pandas", "gensim", "sklearn"]

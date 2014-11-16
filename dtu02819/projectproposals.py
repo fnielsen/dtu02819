@@ -8,9 +8,7 @@ description and a list of modules.
 
 
 import codecs
-from collections import defaultdict
 import json
-from operator import or_
 import os
 import pandas as pd
 import re
@@ -123,13 +121,13 @@ class ProjectProposals(object):
         """Return all unique study numbers as set of strings."""
         study_numbers = set()
         for proposal in self._proposals:
-            try: 
+            try:
                 for member in proposal['members']:
                     study_numbers.add(member['study_number'])
-            except KeyError as err:
+            except KeyError:
                 pass
         return study_numbers
-    
+
     @property
     def titles(self):
         """Return all titles."""
@@ -163,6 +161,7 @@ class ProjectProposals(object):
         # Avoid truncation of strings in elements
         pd.set_option('display.max_colwidth', -1)
 
-        formatters = [lambda element: "*" if element else ""] * len(df_modules.columns)
+        formatters = [lambda element: "*" if element else ""] * \
+            len(df_modules.columns)
         return (self.to_status_df().to_html() + '\n<br><br>\n' +
                 df_modules.to_html(formatters=formatters))

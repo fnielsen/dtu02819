@@ -123,7 +123,7 @@ class PyFiles(list):
 
     def min_pylint_rating(self):
         """Return the minimum pylint rating across files."""
-        return min([pyfile['Pylint rating'] for pyfile in self])    
+        return min([pyfile['Pylint rating'] for pyfile in self])
 
     def max_number_of_pep257_issues(self):
         """Return the maximum number of pep257 issues across files."""
@@ -140,4 +140,3 @@ class PyFiles(list):
             'Max number of pep257 issues': self.max_number_of_pep257_issues()
             }
         return pd.Series(results)
-

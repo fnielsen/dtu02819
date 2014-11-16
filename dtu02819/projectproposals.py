@@ -7,6 +7,8 @@ description and a list of modules.
 """
 
 
+from __future__ import unicode_literals
+
 import codecs
 import json
 import os
@@ -78,7 +80,7 @@ class ProjectProposal(object):
         """Change modules to list of strings if string."""
         if not hasattr(self, 'modules'):
             self.modules = []
-        if isinstance(self.modules, basestring):
+        if isinstance(self.modules, str):
             self.modules = re.findall('\W+', self.modules, flags=re.UNICODE)
 
     def keys(self):

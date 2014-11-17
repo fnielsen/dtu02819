@@ -20,6 +20,7 @@ class CheckError(Exception):
 
 
 def attr_to_key(attrname):
+    """Convert attribute name dictionary key."""
     return re.sub('_', ' ', attrname)
 
 
@@ -33,17 +34,16 @@ class PyFile(dict):
     >>> 'pyfiles.py' in pyfile['filename']
     True
 
-    >>> pyfile.pylint_rating() > 9.5
+    >>> pyfile.pylint_rating > 9.5
     True
 
     """
 
-    def __init__(self, filename, check_all=True):
+    def __init__(self, filename):
         dict.__init__(self)
         self['filename'] = filename
         self._pattern_pylint_rating = \
             re.compile(r'Your code has been rated at (\d+\.\d{2})')
-        self.attr_to_dict()
 
     def run_pep257(self):
         """Run and return output from pep257 tool."""
@@ -60,12 +60,6 @@ class PyFile(dict):
                 raise CheckError(msg)
         return pylint_stdout.read()
 
-    def attr_to_dict(self):
-        attrs = ['number_of_lines', 'pylint_rating',
-                 'number_of_pep257_issues']
-        for attr in attrs:
-            self[attr_to_key(attr)] = attrgetter(attr)(self)
-
     @lazy
     def pylint_rating(self):
         """Get the pylint rating for the file."""
@@ -80,12 +74,31 @@ class PyFile(dict):
 
     @lazy
     def number_of_lines(self):
-        """Return total number of lines in file."""
-        return len(open(self['filename']).read().strip().split('\n'))
+        """Return total number of lines in file.
+
+        Examples
+        --------
+        >>> pyfile = PyFile(__file__)
+        >>> pyfile.number_of_lines > 50
+        True
+
+        """
+        # Reading as binary because we do not know the encoding.
+        with open(self['filename'], 'rb') as fid:
+            lines = fid.readlines()
+        return len(lines)
 
     @lazy
     def number_of_pep257_issues(self):
-        """Return number of issues that the pepe257 reports."""
+        """Return number of issues that the pepe257 reports.
+
+        Examples
+        --------
+        >>> pyfile = PyFile(__file__)
+        >>> pyfile.number_of_pep257_issues
+        0
+
+        """
         return len(list(self.run_pep257()))
 
     def to_series(self):

@@ -44,7 +44,7 @@ class PyFile(dict):
         self._pattern_pylint_rating = \
             re.compile(r'Your code has been rated at (\d+\.\d{2})')
         self.attr_to_dict()
-        
+
     def run_pep257(self):
         """Run and return output from pep257 tool."""
         return pep257.check([self['Filename']])
@@ -61,11 +61,11 @@ class PyFile(dict):
         return pylint_stdout.read()
 
     def attr_to_dict(self):
-        attrs = ['number_of_lines', 'pylint_rating', 
+        attrs = ['number_of_lines', 'pylint_rating',
                  'number_of_pep257_issues']
         for attr in attrs:
             self[attr_to_key(attr)] = attrgetter(attr)(self)
- 
+
     @lazy
     def pylint_rating(self):
         """Get the pylint rating for the file."""

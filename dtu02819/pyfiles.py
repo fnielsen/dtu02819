@@ -30,7 +30,7 @@ class PyFile(dict):
     Example
     -------
     >>> pyfile = PyFile(__file__)
-    >>> 'pyfiles.py' in pyfile['Filename']
+    >>> 'pyfiles.py' in pyfile['filename']
     True
 
     >>> pyfile.pylint_rating() > 9.5
@@ -47,11 +47,11 @@ class PyFile(dict):
 
     def run_pep257(self):
         """Run and return output from pep257 tool."""
-        return pep257.check([self['Filename']])
+        return pep257.check([self['filename']])
 
     def run_pylint(self):
         """Run pylint on file and return output."""
-        (pylint_stdout, pylint_stderr) = lint.py_run(self['Filename'],
+        (pylint_stdout, pylint_stderr) = lint.py_run(self['filename'],
                                                      return_std=True,
                                                      script='pylint')
         if pylint_stderr:
@@ -81,7 +81,7 @@ class PyFile(dict):
     @lazy
     def number_of_lines(self):
         """Return total number of lines in file."""
-        return len(open(self['Filename']).read().strip().split('\n'))
+        return len(open(self['filename']).read().strip().split('\n'))
 
     @lazy
     def number_of_pep257_issues(self):
